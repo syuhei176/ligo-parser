@@ -1,6 +1,7 @@
-// LIGO parser
+// Simple Arithmetics Grammar
 // ==========================
 //
+// Accepts expressions like "2 * (3 + 4)" and computes their value.
 
 LIGO
  = "(" _ Ops _ ", " _ p:(Struct) _  ")" _ {
@@ -74,7 +75,7 @@ String2 "string2"
   = _ "\""str:String"\"" { return str; }
 
 Address "address"
-  = _ "@\""[a-zA-Z0-9_]+"\"" { return text(); }
+  = _ "@\""str:String"\"" { return str; }
 
 
 _ "whitespace"
