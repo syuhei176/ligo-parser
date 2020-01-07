@@ -1,0 +1,81 @@
+// LIGO parser
+// ==========================
+//
+
+LIGO
+ = "(" _ Ops _ ", " _ p:(Struct) _  ")" _ {
+  return p
+}
+
+Ops = "[" _ Op _ ("," _ Op)* _ "]" / "[]"
+Op = "Operation(...bytes)"
+
+Primitive
+  = _ [0-9a-zA-Z_=@]+ { return text() }
+
+Struct
+  = "{" _ attr:Attribute _ attrs:("," _ Attribute _)* _ "}" { let obj = {};[attr].concat(attrs.map((a)=>a[2])).forEach((a) => obj[a[0]] = a[1]);return obj; }
+
+Array
+  = "[" _ primitive:Item _ primitives:("," _ Item _)* _ "]" { return [primitive].concat(primitives) }
+
+Map
+  = "[" _ attr:MapAttribute _ attrs:(";" _ MapAttribute _)* _ "]" { let obj = {};[attr].concat(attrs.map((a)=>a[2])).forEach((a) => obj[a[0]] = a[1]);return obj; }
+
+Tuple
+  = "(" _ primitive:Item _ primitives:("," _ Item _)* _ ")" {
+  return [primitive].concat(primitives.map((a)=>a[2]))
+  }
+
+Attribute
+  = attr:Key _ "=" _ p:(Item) { return [attr, p] }
+
+MapAttribute
+  = attr:Key _ "->" _ p:(Item) { return [attr, p] }
+
+Enum
+  = attr:String "(" item: Item")" { return [attr, item] }
+
+Item
+ = Struct / Map / Array / Tuple / Number / Address / String2 / Enum / Primitive
+
+Expression
+  = head:Term tail:(_ ("+" / "-") _ Term)* {
+      return tail.reduce(function(result, element) {
+        if (element[1] === "+") { return result + element[3]; }
+        if (element[1] === "-") { return result - element[3]; }
+      }, head);
+    }
+
+Term
+  = head:Factor tail:(_ ("*" / "/") _ Factor)* {
+      return tail.reduce(function(result, element) {
+        if (element[1] === "*") { return result * element[3]; }
+        if (element[1] === "/") { return result / element[3]; }
+      }, head);
+    }
+
+Factor
+  = "(" _ expr:Expression _ ")" { return expr; }
+  / Integer
+
+Key = Number / Address / String2 / String
+
+Integer "integer"
+  = _ [0-9]+ { return parseInt(text(), 10); }
+
+Number "number"
+  = _ "+"[0-9]+ { return parseInt(text(), 10); }
+
+String "string"
+  = _ [a-zA-Z0-9_]+ { return text(); }
+
+String2 "string2"
+  = _ "\""str:String"\"" { return str; }
+
+Address "address"
+  = _ "@\""[a-zA-Z0-9_]+"\"" { return text(); }
+
+
+_ "whitespace"
+  = [ \t\n\r]*
