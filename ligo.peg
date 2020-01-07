@@ -75,7 +75,7 @@ String2 "string2"
   = _ "\""str:String"\"" { return str; }
 
 Address "address"
-  = _ "@\""str:String"\"" { return str; }
+  = _ "address \""str:String"\"" { return str; }
 
 
 _ "whitespace"

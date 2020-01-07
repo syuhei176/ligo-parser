@@ -274,8 +274,8 @@ module.exports
         return str;
       },
       peg$c59 = peg$otherExpectation("address"),
-      peg$c60 = '@"',
-      peg$c61 = peg$literalExpectation('@"', false),
+      peg$c60 = 'address "',
+      peg$c61 = peg$literalExpectation('address "', false),
       peg$c62 = peg$otherExpectation("whitespace"),
       peg$c63 = /^[ \t\n\r]/,
       peg$c64 = peg$classExpectation([" ", "\t", "\n", "\r"], false, false),
@@ -2039,9 +2039,9 @@ module.exports
       s0 = peg$currPos;
       s1 = peg$parse_();
       if (s1 !== peg$FAILED) {
-        if (input.substr(peg$currPos, 2) === peg$c60) {
+        if (input.substr(peg$currPos, 9) === peg$c60) {
           s2 = peg$c60;
-          peg$currPos += 2;
+          peg$currPos += 9;
         } else {
           s2 = peg$FAILED;
           if (peg$silentFails === 0) {
